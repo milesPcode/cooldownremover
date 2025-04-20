@@ -1,0 +1,39 @@
+-- Universal Cooldown Remover Script (Server-side)
+local function removeCooldown(tool)
+	-- Check if the tool has a debounce or cooldown
+	if not tool:FindFirstChild("Debounce") then
+		-- Create a new Debounce to prevent any further cooldown logic
+		local debounce = Instance.new("BoolValue")
+		debounce.Name = "Debounce"
+		debounce.Value = false
+		debounce.Parent = tool
+	end
+	
+	tool.Activated:Connect(function()
+		-- Allow tool activation without cooldown
+		if tool.Debounce.Value then
+			return
+		end
+		tool.Debounce.Value = true
+		
+		-- Your tool's effect or function goes here, for example:
+		print(tool.Name .. " is being used!")
+		
+		-- Reset debounce value right away for infinite usage
+		tool.Debounce.Value = false
+	end)
+end
+
+-- Iterate through all tools in the game (you can adjust this for specific tools)
+game:GetService("Workspace").ChildAdded:Connect(function(child)
+	if child:IsA("Tool") then
+		removeCooldown(child)
+	end
+end)
+
+-- Also apply the function to all existing tools in the game
+for _, tool in ipairs(game:GetService("Workspace"):GetChildren()) do
+	if tool:IsA("Tool") then
+		removeCooldown(tool)
+	end
+end
